@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Pesos de criterios</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f6f6f6; }
+h1 { color: #333; text-align: center; }
+h2 { color: #ff6347; margin-top: 20px; }
+h3 { color: #1e90ff; margin-left: 20px; }
+h4 { color: #32cd32; margin-left: 40px; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+td:first-child { width: 50%; } /* La primera columna ocupa más espacio */
+input[type=number] { width: 60px; }
+button { margin-top: 20px; padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 8px; cursor: pointer; }
+button:hover { background: #0056b3; }
+</style>
+</head>
+<body>
+<h1>Pesos de criterios de evaluación</h1>
+<form method="post">
+{% for grupo, subgrupos in criterios.items() %}
+    <h2>{{ grupo }}</h2>
+    {% for subgrupo, criterios_detalle in subgrupos.items() %}
+        <h3>{{ subgrupo }}</h3>
+        <table>
+        {% for criterio, peso in criterios_detalle.items() %}
+            <tr>
+                <td>{{ criterio }}</td>
+                <td><input type="number" name="{{ grupo }}__{{ subgrupo }}__{{ criterio }}" min="1" max="20" value="{{ peso }}"></td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% endfor %}
+{% endfor %}
+<button type="submit">Guardar pesos</button>
+</form>
+</body>
+</html>

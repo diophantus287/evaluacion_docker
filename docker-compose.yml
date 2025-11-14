@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: evaluacion_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 3val
+      MYSQL_DATABASE: evaluacion
+      MYSQL_USER: warein
+      MYSQL_PASSWORD: warein
+    volumes:
+      - ./dbdata:/var/lib/mysql
+    networks:
+      - web
+
+  backend:
+    build: ./backend
+    container_name: evaluacion_backend
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: warein
+      DB_PASS: warein
+      DB_NAME: evaluacion
+    volumes:
+      - ./backend:/app
+      - ./logs:/app/logs
+    networks:
+      - web
+
+networks:
+  web:
+    external: true

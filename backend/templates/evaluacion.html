@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Evaluación del {{ prof }}</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f6f6f6; }
+h1 { text-align: center; }
+table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
+th { background: #007BFF; color: white; }
+.alumnos { margin-top: 20px; }
+#pruebas-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-top: 20px;
+  text-align: left;
+}
+.lista-pruebas {
+  margin-bottom: 15px;
+}
+.prueba-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+.prueba-item a {
+  text-decoration: none;
+  color: #007BFF;
+}
+.prueba-item a:hover {
+  text-decoration: underline;
+}
+.crear-prueba {
+  text-align: center;
+  margin-top: 10px;
+}
+.crear-prueba a {
+  font-weight: bold;
+  color: #007BFF;
+  text-decoration: none;
+}
+.crear-prueba a:hover {
+  text-decoration: underline;
+}
+
+</style>
+</head>
+<body>
+
+<h2>Evaluación del {{ prof }}</h2>
+
+<!-- Tabla de pesos seleccionados -->
+{% if mensaje %}
+  <p style="margin-top:20px;font-weight:bold;">
+    {{ mensaje }}
+    <!-- Agregar blueprint correcto: profesores -->
+    <a href="{{ url_for('profesores.pesos', prof='prof_' + prof) }}">Crear ahora</a>
+  </p>
+{% else %}
+  <h2>Pesos seleccionados de criterios</h2>
+  <table border="1" cellpadding="5">
+    <tr>
+      {% for c in criterios %}
+        <th>{{ c }}</th>
+      {% endfor %}
+    </tr>
+    <tr>
+      {% for p in pesos %}
+        <td>{{ p }}</td>
+      {% endfor %}
+    </tr>
+  </table>
+{% endif %}
+
+<!-- Selección de alumno -->
+<h2>Alumnos</h2>
+{% if alumnos %}
+  <form method="get" action="#">
+    <select name="alumno">
+      {% for a in alumnos %}
+        <option>{{ a }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Ver</button>
+  </form>
+{% else %}
+  <p>No tienes estudiantes para evaluar,
+     <!-- Blueprint alumnos -->
+     <a href="{{ url_for('alumnos.alumnos', prof=prof) }}">añádelos</a>.
+  </p>
+{% endif %}
+
+<hr>
+
+<!-- BLOQUE DE PRUEBAS EVALUABLES -->
+<div id="pruebas-container">
+  <h2>Pruebas evaluables</h2>
+
+  {% if pruebas and pruebas|length > 0 %}
+    <div class="lista-pruebas">
+      {% for id, nombre in pruebas %}
+        <div class="prueba-item">
+          <span>{{ nombre }}</span>
+          <!-- Blueprint pruebas -->
+          <a href="{{ url_for('pruebas.ver_prueba', prof=prof, prueba=nombre) }}">Ver</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No tienes pruebas evaluables todavía.</p>
+  {% endif %}
+
+  <div class="crear-prueba">
+    <!-- Blueprint pruebas -->
+    <a href="{{ url_for('pruebas.crear_prueba', prof=prof) }}">➕ Crear nueva prueba evaluable</a>
+  </div>
+</div>
+
+
+
+</body>
+</html>

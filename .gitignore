@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+
+# Docker
+dbdata/
+logs/
+
+# VSCode u otros
+.vscode/
