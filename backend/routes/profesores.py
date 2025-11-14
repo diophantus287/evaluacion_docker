@@ -115,31 +115,43 @@ def evaluacion():
     cursor = cnx.cursor(dictionary=True)
 
     # Obtener criterios y pesos del profesor
-    cursor.execute("SELECT nombre, peso FROM criterios WHERE profesor_id=%s ORDER BY id", (profesor_id,))
+    cursor.execute(
+        "SELECT nombre, peso FROM criterios WHERE profesor_id=%s ORDER BY id",
+        (profesor_id,)
+    )
     resultados = cursor.fetchall()
-    criterios = [r['nombre'] for r in resultados] if resultados else None
-    pesos = [r['peso'] for r in resultados] if resultados else None
+
+    if resultados:
+        # Combinar nombre y peso en una lista de tuplas
+        lista_criterios = [(r['nombre'], r['peso']) for r in resultados]
+    else:
+        lista_criterios = []
 
     # Obtener alumnos del profesor
-    cursor.execute("SELECT nombre FROM alumnos WHERE profesor_id=%s ORDER BY id", (profesor_id,))
+    cursor.execute(
+        "SELECT nombre FROM alumnos WHERE profesor_id=%s ORDER BY id",
+        (profesor_id,)
+    )
     alumnos = [r['nombre'] for r in cursor.fetchall()]
 
     # Obtener pruebas del profesor
-    cursor.execute("SELECT id, nombre FROM pruebas WHERE profesor_id=%s ORDER BY id", (profesor_id,))
+    cursor.execute(
+        "SELECT id, nombre FROM pruebas WHERE profesor_id=%s ORDER BY id",
+        (profesor_id,)
+    )
     pruebas = [(r['id'], r['nombre']) for r in cursor.fetchall()]
 
     cursor.close()
     cnx.close()
 
     mensaje = None
-    if not criterios:
+    if not lista_criterios:
         mensaje = "No tienes pesos por criterios. ¿Deseas crearlos?"
 
     return render_template(
         "evaluacion.html",
         prof=prof_nombre,
-        criterios=criterios,
-        pesos=pesos,
+        lista_criterios=lista_criterios,
         alumnos=alumnos,
         pruebas=pruebas,
         mensaje=mensaje
