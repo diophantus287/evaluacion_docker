@@ -6,9 +6,20 @@
 <style>
 body { font-family: Arial, sans-serif; padding: 20px; background: #f6f6f6; }
 h1, h2 { text-align: center; color: #333; }
-table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-th { background: #007BFF; color: white; }
+table {
+  width: 40%;
+  border-collapse: collapse;
+  table-layout: auto;
+  margin: 0 auto; /* CENTRA LA TABLA */
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  vertical-align: top;
+}
+td:first-child {
+  width: 60%; /* más ancho para textos largos */
+}
 .alumnos { margin-top: 20px; }
 #pruebas-container {
   background: #ffffff;
@@ -58,44 +69,36 @@ th { background: #007BFF; color: white; }
     {{ mensaje }}
     <a href="{{ url_for('criterios.pesos') }}">Crear ahora</a>
   </p>
+
 {% else %}
+
   <h2>Pesos seleccionados de criterios</h2>
 
   {% if lista_criterios %}
   <table>
-    <!-- Primera fila: hasta criterio 4.2 (índice 0-7) -->
     <tr>
-      {% for c, p in lista_criterios[:8] %}
-        <th>{{ c }}</th>
-      {% endfor %}
-    </tr>
-    <tr>
-      {% for c, p in lista_criterios[:8] %}
-        <td>{{ p }}</td>
-      {% endfor %}
+      <th>Criterio</th>
+      <th>Peso</th>
     </tr>
 
-    <!-- Segunda fila: resto de criterios -->
+    {% for c, p in lista_criterios %}
     <tr>
-      {% for c, p in lista_criterios[8:] %}
-        <th>{{ c }}</th>
-      {% endfor %}
+      <td>{{ c }}</td>
+      <td>{{ p }}</td>
     </tr>
-    <tr>
-      {% for c, p in lista_criterios[8:] %}
-        <td>{{ p }}</td>
-      {% endfor %}
-    </tr>
+    {% endfor %}
   </table>
+
+  {% else %}
+    <p>No hay criterios definidos.</p>
+  {% endif %}
 
   <div class="modificar-pesos">
     <a href="{{ url_for('criterios.pesos') }}">
       <button type="button">Modificar pesos</button>
     </a>
   </div>
-  {% else %}
-    <p>No hay criterios definidos.</p>
-  {% endif %}
+
 {% endif %}
 
 <!-- Selección de alumno -->
@@ -109,6 +112,12 @@ th { background: #007BFF; color: white; }
     </select>
     <button type="submit">Ver</button>
   </form>
+  <div class="modificar-alumnos" style="text-align:center; margin-top:10px;">
+  <a href="{{ url_for('alumnos.alumnos') }}">
+    <button type="button">Modificar alumnos</button>
+  </a>
+</div>
+
 {% else %}
   <p>No tienes estudiantes para evaluar,
      <a href="{{ url_for('alumnos.alumnos', prof=prof) }}">añádelos</a>.
@@ -125,7 +134,7 @@ th { background: #007BFF; color: white; }
       {% for id, nombre in pruebas %}
         <div class="prueba-item">
           <span>{{ nombre }}</span>
-          <a href="{{ url_for('pruebas.ver_prueba', prof=prof, prueba=nombre) }}">Ver</a>
+          <a href="{{ url_for('pruebas.ver_prueba', prueba_id=id) }}">Ver</a>
         </div>
       {% endfor %}
     </div>
@@ -136,6 +145,7 @@ th { background: #007BFF; color: white; }
     <a href="{{ url_for('pruebas.crear_prueba', prof=prof) }}">➕ Crear nueva prueba evaluable</a>
   </div>
 </div>
+
 
 </body>
 </html>

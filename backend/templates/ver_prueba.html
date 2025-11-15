@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Ver Prueba - Prueba {{ prueba_id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #888;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            padding: 8px 16px;
+            margin-right: 10px;
+            background-color: #4287f5;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #2a5fc5;
+        }
+        tfoot td {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resultados de la Prueba {{ prueba_id }}</h1>
+
+    <table>
+		<thead>
+			<tr>
+				<th>Alumno</th>
+				{% set primer_alumno = alumnos.values()|list|first %}
+				{% for nota in primer_alumno.notas %}
+					<th>{{ nota.criterio }}</th>
+				{% endfor %}
+				<th>Media</th>
+			</tr>
+		</thead>
+        <tbody>
+            {% for alumno_id, datos in alumnos.items() %}
+            <tr>
+                <td>{{ datos.nombre }}</td>
+                {% for n in datos.notas %}
+                    <td>{{ n.nota if n.nota is not none else 'N/A' }}</td>
+                {% endfor %}
+                <td>{{ datos.media }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="{{ primer_alumno.notas|length + 1 }}">Media General</td>
+                <td>{{ media_general }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <a href="{{ url_for('pruebas.ingresar_notas', prueba_id=prueba_id) }}" class="btn">Modificar notas</a>
+    <a href="{{ url_for('profesores.evaluacion', prof=prueba.prof_id) }}" class="btn">Volver a evaluación</a>
+
+</body>
+</html>

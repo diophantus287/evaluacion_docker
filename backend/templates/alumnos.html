@@ -7,17 +7,34 @@
 body { font-family: Arial, sans-serif; padding: 20px; background: #f6f6f6; }
 form { display: block; max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
 input[type=text] { width: 100%; padding: 8px; margin-bottom: 5px; border-radius: 6px; border: 1px solid #ccc; }
-button { padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 8px; cursor: pointer; }
+button { padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
 button:hover { background: #0056b3; }
 </style>
 </head>
 <body>
 <h1>Añadir alumnos - {{ prof }}</h1>
-<form method="post">
-  {% for i in range(25) %}
-    <input type="text" name="alumno{{ i+1 }}" value="{{ alumnos[i] }}">
-  {% endfor %}
+<form method="post" id="alumnosForm">
+  <div id="inputs-container">
+    {% for i in range(alumnos|length if alumnos|length <= 10 else 10) %}
+      <input type="text" name="alumno{{ i+1 }}" value="{{ alumnos[i] }}">
+    {% endfor %}
+  </div>
+  <button type="button" onclick="addInput()">Añadir más</button>
   <button type="submit">Guardar alumnos</button>
 </form>
+
+<script>
+let contador = {{ alumnos|length if alumnos|length <= 10 else 10 }};
+function addInput() {
+    if (contador >= 25) return; // límite máximo 25
+    contador++;
+    const container = document.getElementById("inputs-container");
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = "alumno" + contador;
+    input.value = "";
+    container.appendChild(input);
+}
+</script>
 </body>
 </html>

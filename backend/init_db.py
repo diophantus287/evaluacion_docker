@@ -45,15 +45,15 @@ def init_db():
 
     # Evaluaciones (alumno + criterio + profesor)
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS evaluaciones (
+    CREATE TABLE IF NOT EXISTS notas (
         id INT AUTO_INCREMENT PRIMARY KEY,
+        prueba_id INT NOT NULL,
         alumno_id INT NOT NULL,
         criterio_id INT NOT NULL,
-        nota FLOAT NOT NULL,
-        profesor_id INT NOT NULL,
-        FOREIGN KEY (alumno_id) REFERENCES alumnos(id),
-        FOREIGN KEY (criterio_id) REFERENCES criterios(id),
-        FOREIGN KEY (profesor_id) REFERENCES profesores(id)
+        nota FLOAT NULL,
+        FOREIGN KEY (prueba_id) REFERENCES pruebas(id) ON DELETE CASCADE,
+        FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE,
+        FOREIGN KEY (criterio_id) REFERENCES criterios(id) ON DELETE CASCADE
     );
     """)
 

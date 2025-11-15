@@ -14,35 +14,43 @@ def alumnos():
     cnx = get_connection()
     cursor = cnx.cursor(dictionary=True)
 
-    # Crear la tabla si no existe
+    # Crear tabla alumnos si no existe
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS alumnos (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            nombre VARCHAR(100) NOT NULL,
             profesor_id INT NOT NULL,
-            nombre VARCHAR(100),
-            FOREIGN KEY (profesor_id) REFERENCES profesores(id) ON DELETE CASCADE
+            FOREIGN KEY (profesor_id) REFERENCES profesores(id)
         );
     """)
 
     if request.method == "POST":
-        nombres = [request.form.get(f"alumno{i+1}") for i in range(25)]
-        for nombre in nombres:
-            if nombre and nombre.strip():
+        # Borrar alumnos existentes del profesor
+        cursor.execute("DELETE FROM alumnos WHERE profesor_id=%s", (profesor_id,))
+
+        # Insertar nuevos nombres
+        for i in range(25):
+            nombre = request.form.get(f"alumno{i+1}", "").strip()
+            if nombre:
                 cursor.execute(
-                    "INSERT INTO alumnos (profesor_id, nombre) VALUES (%s, %s)",
-                    (profesor_id, nombre.strip())
+                    "INSERT INTO alumnos (nombre, profesor_id) VALUES (%s, %s)",
+                    (nombre, profesor_id)
                 )
         cnx.commit()
+        cursor.close()
+        cnx.close()
+        return redirect(url_for("profesores.evaluacion"))
 
-    # Obtener alumnos actuales
-    cursor.execute("SELECT id, nombre FROM alumnos WHERE profesor_id=%s ORDER BY id", (profesor_id,))
-    alumnos_lista = cursor.fetchall()
-
+    # GET: obtener alumnos actuales
+    cursor.execute("SELECT nombre FROM alumnos WHERE profesor_id=%s ORDER BY id", (profesor_id,))
+    filas = cursor.fetchall()
     cursor.close()
     cnx.close()
 
+    alumnos_lista = [fila["nombre"] for fila in filas]
+
+    # Si no hay alumnos, mostrar 25 por defecto
     if not alumnos_lista:
-        # Mostrar valores por defecto si aún no hay alumnos
-        alumnos_lista = [{'id': i+1, 'nombre': f'Estudiante {i+1}'} for i in range(25)]
+        alumnos_lista = [f"Estudiante {i+1}" for i in range(25)]
 
     return render_template("alumnos.html", prof=prof_nombre, alumnos=alumnos_lista)

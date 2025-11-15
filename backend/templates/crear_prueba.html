@@ -1,0 +1,12 @@
+<h1>Crear nueva prueba</h1>
+<form method="POST">
+    <label>Nombre de la prueba:</label>
+    <input type="text" name="nombre" required><br><br>
+
+    <label>Criterios a evaluar:</label><br>
+    {% for crit in criterios %}
+        <input type="checkbox" name="criterios" value="{{ crit.id }}"> {{ crit.nombre }} (Peso: {{ crit.peso }})<br>
+    {% endfor %}
+
+    <br><input type="submit" value="Guardar prueba">
+</form>
