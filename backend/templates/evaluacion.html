@@ -103,21 +103,22 @@ td:first-child {
 
 <!-- Selección de alumno -->
 <h2>Alumnos</h2>
+
+
 {% if alumnos %}
-  <form method="get" action="#">
+  <form method="get" action="{{ url_for('alumnos.ver_notas') }}">
     <select name="alumno">
       {% for a in alumnos %}
-        <option>{{ a }}</option>
+        <option value="{{ a }}">{{ a }}</option>
       {% endfor %}
     </select>
     <button type="submit">Ver</button>
   </form>
   <div class="modificar-alumnos" style="text-align:center; margin-top:10px;">
-  <a href="{{ url_for('alumnos.alumnos') }}">
-    <button type="button">Modificar alumnos</button>
-  </a>
-</div>
-
+    <a href="{{ url_for('alumnos.alumnos_lista') }}">
+      <button type="button">Modificar alumnos</button>
+    </a>
+  </div>
 {% else %}
   <p>No tienes estudiantes para evaluar,
      <a href="{{ url_for('alumnos.alumnos', prof=prof) }}">añádelos</a>.

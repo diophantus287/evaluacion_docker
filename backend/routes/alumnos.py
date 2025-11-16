@@ -54,3 +54,26 @@ def alumnos():
         alumnos_lista = [f"Estudiante {i+1}" for i in range(25)]
 
     return render_template("alumnos.html", prof=prof_nombre, alumnos=alumnos_lista)
+
+
+@alumnos_bp.route('/alumnos/notas', methods=['GET'])
+def ver_notas():
+    alumno_seleccionado = request.args.get('alumno')
+    notas = []
+
+    if alumno_seleccionado:
+        cnx = get_connection()
+        cursor = cnx.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT p.nombre AS prueba, c.nombre AS criterio, n.nota
+            FROM notas n
+            JOIN pruebas p ON n.prueba_id = p.id
+            JOIN criterios c ON n.criterio_id = c.id
+            JOIN alumnos a ON n.alumno_id = a.id
+            WHERE a.nombre = %s
+        """, (alumno_seleccionado,))
+        notas = cursor.fetchall()
+        cursor.close()
+        cnx.close()
+
+    return render_template('notas_alumno.html', alumno=alumno_seleccionado, notas=notas)

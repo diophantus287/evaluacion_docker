@@ -1,0 +1,24 @@
+<h2>Notas de {{ alumno }}</h2>
+
+{% if notas %}
+  <table border="1" style="margin:auto; text-align:center;">
+    <tr>
+      <th>Prueba</th>
+      <th>Criterio</th>
+      <th>Nota</th>
+    </tr>
+    {% for n in notas %}
+    <tr>
+      <td>{{ n.prueba }}</td>
+      <td>{{ n.criterio }}</td>
+      <td>{{ n.nota }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <p>No hay notas registradas para este alumno.</p>
+{% endif %}
+
+<div style="text-align:center; margin-top:10px;">
+  <a href="{{ url_for('alumnos.alumnos') }}"><button>Volver</button></a>
+</div>
