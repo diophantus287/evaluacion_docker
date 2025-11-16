@@ -43,22 +43,22 @@
 
     <form method="post">
         <table>
-			<thead>
-				<tr>
-					<th>Alumno</th>
-					{% set primer_alumno = alumnos.values()|list|first %}
-					{% for nota in primer_alumno.notas %}
-						<th>{{ nota.criterio }}</th>
-					{% endfor %}
-				</tr>
-			</thead>
+            <thead>
+                <tr>
+                    <th>Alumno</th>
+                    {% set primer_alumno = alumnos.values()|list|first %}
+                    {% for nota in primer_alumno.notas %}
+                        <th>{{ nota.criterio }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
             <tbody>
                 {% for alumno_id, datos in alumnos.items() %}
                 <tr>
                     <td>{{ datos.nombre }}</td>
                     {% for n in datos.notas %}
                         <td>
-                            <input type="number" name="nota_{{ n.nota_id }}" min="0" max="10" step="0.1" value="{{ n.nota if n.nota is not none else '' }}">
+                            <input type="number" name="nota_{{ n.nota_id }}" min="0" max="10" step="0.1" value="{{ n.nota if n.nota is not none else range(1,11)|random }}">
                         </td>
                     {% endfor %}
                 </tr>

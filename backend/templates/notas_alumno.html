@@ -1,24 +1,111 @@
 <h2>Notas de {{ alumno }}</h2>
 
 {% if notas %}
-  <table border="1" style="margin:auto; text-align:center;">
+
+  {# Obtener lista de pruebas como lista real #}
+  {% set pruebas = notas | map(attribute='prueba') | list %}
+  {% set pruebas = pruebas | unique | list %}
+
+  {# Obtener lista de criterios como lista real #}
+  {% set criterios = notas | map(attribute='criterio') | list %}
+  {% set criterios = criterios | unique | list %}
+
+  <table border="1" style="margin:auto; text-align:center; border-collapse:collapse;">
     <tr>
       <th>Prueba</th>
-      <th>Criterio</th>
-      <th>Nota</th>
+      {% for c in criterios %}
+        <th>{{ c }}</th>
+      {% endfor %}
     </tr>
-    {% for n in notas %}
-    <tr>
-      <td>{{ n.prueba }}</td>
-      <td>{{ n.criterio }}</td>
-      <td>{{ n.nota }}</td>
-    </tr>
+
+    {% for p in pruebas %}
+      <tr>
+        <td>{{ p }}</td>
+        {% for c in criterios %}
+
+          {% set valores = notas
+              | selectattr('prueba', 'equalto', p)
+              | selectattr('criterio', 'equalto', c)
+              | map(attribute='nota')
+              | list
+          %}
+
+          <td>
+            {% if valores %}
+              {{ valores[0] }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+
+        {% endfor %}
+      </tr>
     {% endfor %}
+
+    <tr>
+      <th>Media</th>
+      {% for c in criterios %}
+        {% set valores = notas
+            | selectattr('criterio', 'equalto', c)
+            | map(attribute='nota')
+            | list
+        %}
+        {% if valores %}
+          <td>{{ (valores|sum / valores|length) | round(2) }}</td>
+        {% else %}
+          <td>-</td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+
   </table>
+
+  {# Construir lista de medias como lista real para JSON #}
+  {% set medias = [] %}
+  {% for c in criterios %}
+    {% set valores = notas
+        | selectattr('criterio', 'equalto', c)
+        | map(attribute='nota')
+        | list
+    %}
+    {% if valores %}
+      {% set _ = medias.append((valores|sum / valores|length) | round(2)) %}
+    {% else %}
+      {% set _ = medias.append(0) %}
+    {% endif %}
+  {% endfor %}
+
+  <div style="width:70%; margin:auto; margin-top:20px;">
+    <canvas id="grafica"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const ctx = document.getElementById('grafica');
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {{ criterios | tojson }},
+        datasets: [{
+          label: 'Media por criterio',
+          data: {{ medias | tojson }},
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+
 {% else %}
   <p>No hay notas registradas para este alumno.</p>
 {% endif %}
 
 <div style="text-align:center; margin-top:10px;">
-  <a href="{{ url_for('alumnos.alumnos') }}"><button>Volver</button></a>
+  <a href="{{ url_for('profesores.evaluacion') }}"><button>Volver</button></a>
 </div>
